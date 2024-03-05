@@ -1,0 +1,11 @@
+---
+name: rails-graphql-async-demo
+language: ruby
+appmap_dir: tmp/appmap
+packages:
+  - path: app
+  - path: lib
+exclude: []
+functions:
+  - methods:
+    - ActiveRecord::Base.connection#open_transactions
