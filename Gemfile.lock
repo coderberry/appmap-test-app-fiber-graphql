@@ -1,3 +1,12 @@
+PATH
+  remote: ../../../appmap-ruby
+  specs:
+    appmap (1.0.0)
+      activesupport
+      method_source
+      rack
+      reverse_markdown
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -77,11 +86,6 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    appmap (1.0.0)
-      activesupport
-      method_source
-      rack
-      reverse_markdown
     async (2.6.5)
       console (~> 1.10)
       fiber-annotation
@@ -268,7 +272,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  appmap
+  appmap!
   async
   bootsnap
   capybara
