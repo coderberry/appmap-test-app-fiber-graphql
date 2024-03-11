@@ -42,3 +42,4 @@ Ensure you are viewing the Rails server logs and sumbmit the request a 6th time.
 
 Example:
 
+![CleanShot 2024-03-05 at 16 17 57](https://github.com/coderberry/appmap-test-app-fiber-graphql/assets/12481/c3287d73-fb38-47cd-ab44-c202e0a6507a)
