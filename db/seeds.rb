@@ -23,8 +23,6 @@
 #   end
 # end
 
-require "faker"
-
 puts "Creating new cards..."
 1000.times do |i|
   puts "Creating Card #{i+1}"

@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.2.2"
 
-gem "appmap", group: [:development, :test], path: "../../../appmap-ruby", require: ENV["APPMAP"] == true
+gem "appmap", group: [:development, :test]
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1"
@@ -73,5 +73,5 @@ group :test do
 end
 
 gem "async"
-gem "graphql", "~> 2.2"
+gem "graphql", "2.2.13"
 gem "graphiql-rails", group: :development

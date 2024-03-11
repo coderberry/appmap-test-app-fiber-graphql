@@ -1,63 +1,44 @@
-# Rails, GraphQL, Async demo
+# AppMap + GraphQL + Fiber Bug
 
-This app demonstrates parallel HTTP and ActiveRecord calls using [AsyncDataloader](https://graphql-ruby.org/dataloader/async_dataloader). You could use this to speed up GraphQL-Ruby queries that do long-running external service calls.
+This app replicates the bug reported at https://github.com/getappmap/appmap-ruby/issues/349.
 
-To enable the AsyncDataloader, use it in the schema configuration:
+## Conditions
 
-```diff
-- use GraphQL::Dataloader
-+ use GraphQL::Dataloader::AsyncDataloader
-+ # from a development branch of graphql-ruby
+- Using the appmap gem
+- Using the latest graphql gem
+- `config.active_support.isolation_level = :fiber` in application.rb
+
+## Steps to reproduce
+
+### 1. Prepare app
+
+```bash
+git clone git@github.com:coderberry/appmap-test-app-fiber-graphql.git
+cd appmap-test-app-fiber-graphql
+bin/setup
+bin/rails db:migrate
+bin/rails db:seed
 ```
 
-Consider a query like this one:
+### 2. Run the app
+
+```bash
+bin/rails s
+```
+
+### 3. Execute a query via GraphiQL
+
+Open [http://locahost:3000/graphiql](http://localhost:3000/graphiql)) and execute the following query 5 times:
 
 ```graphql
-{
-  count1: remoteDataloaderCount(set: "zen")
-  count2: remoteDataloaderCount(set: "lrw")
-  count3: remoteDataloaderCount(set: "m10")
+query {
+  localCounts
 }
 ```
 
-Without `AsyncDataloader`, these operations run in sequence, for example:
+### 4. Observe the hung fibers
 
-```
-Processing by GraphqlController#execute as */*
+Ensure you are viewing the Rails server logs and sumbmit the request a 6th time. The request will hang and you will see that the connection pool was not cleaned up.
 
-Started Sources::RemoteSet / zen
-Finished Sources::RemoteSet / zen
-Started Sources::RemoteSet / lrw
-Finished Sources::RemoteSet / lrw
-Started Sources::RemoteSet / m10
-Finished Sources::RemoteSet / m10
+Example:
 
-Completed 200 OK in 219ms (Views: 0.2ms | ActiveRecord: 0.0ms | Allocations: 56576)
-```
-
-But, when `AsyncDataloader` is enabled, the operations run simultaneously:
-
-```
-Processing by GraphqlController#execute as */*
-
-Started Sources::RemoteSet / zen
-Started Sources::RemoteSet / lrw
-Started Sources::RemoteSet / m10
-Finished Sources::RemoteSet / lrw
-Finished Sources::RemoteSet / m10
-Finished Sources::RemoteSet / zen
-
-Completed 200 OK in 120ms (Views: 0.2ms | ActiveRecord: 0.0ms | Allocations: 88201)
-```
-
-#### HTTP Calls
-
-
-https://github.com/rmosolgo/rails-graphql-async-demo/blob/1e7ac9356f87e6a8b3d867a2c0815c8ab6b83e69/app/graphql/sources/remote_set.rb#L6-L13
-
-
-#### ActiveRecord Calls
-
-_Note: with sqlite3, these won't be parallel because sqlite only supports one operation at a time._
-
-https://github.com/rmosolgo/rails-graphql-async-demo/blob/1e7ac9356f87e6a8b3d867a2c0815c8ab6b83e69/app/graphql/sources/local_set.rb#L6-L12
